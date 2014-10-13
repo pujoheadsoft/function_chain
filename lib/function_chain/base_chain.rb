@@ -1,24 +1,24 @@
 module FunctionChain
   # Base class of PullChain, RelayChain
   class BaseChain
-    # Add call chains
+    # Add functions to chain
     def add_all(*functions)
       insert_all(chain_elements.size, *functions)
       self
     end
 
-    # Add call chain
+    # Add function to chain
     def add(function)
       insert(chain_elements.size, function)
     end
 
-    # Insert call chains
+    # Insert functions to chain
     def insert_all(index, *functions)
       functions.each_with_index { |f, i| insert(index + i, f) }
       self
     end
 
-    # Insert call chain
+    # Insert function to chain
     def insert(index, function)
       if function.is_a? String
         do_insert_by_string(index, function)
@@ -28,10 +28,15 @@ module FunctionChain
       self
     end
 
-    # Delete call chain
+    # Delete from chain
     def delete_at(index)
       chain_elements.delete_at(index)
       self
+    end
+
+    # Clear function chain
+    def clear
+      chain_elements.clear
     end
 
     def to_s

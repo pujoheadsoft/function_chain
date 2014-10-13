@@ -1,31 +1,25 @@
-# FunctionChain
+FunctionChain
+====
 
-TODO: Write a gem description
+[![Build Status](https://travis-ci.org/pujoheadsoft/function_chain.svg)][travis]
 
-## Installation
+Description
+-----------
+FunctionChain objectifies of the method chain.
+chain objects can call later or add chain or insert_all chain or delete chain.
+supported chain type is following: foo.bar.baz, baz(bar(foo(value))).
 
-Add this line to your application's Gemfile:
+Installation
+------------
+    gem install function_chain
 
-```ruby
-gem 'function_chain'
-```
 
-And then execute:
+Usage and documentation
+-----------------------
+TODO
 
-    $ bundle
+License
+-------
+Released under the MIT License.  See the [LICENSE][] file for further details.
 
-Or install it yourself as:
-
-    $ gem install function_chain
-
-## Usage
-
-TODO: Write usage instructions here
-
-## Contributing
-
-1. Fork it ( https://github.com/[my-github-username]/function_chain/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
+[license]: LICENSE.md

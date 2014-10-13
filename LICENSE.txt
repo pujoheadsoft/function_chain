@@ -1,4 +1,4 @@
-Copyright (c) 2014 kenji_suzuki
+Copyright (c) 2014 Kenji Suzuki
 
 MIT License
 

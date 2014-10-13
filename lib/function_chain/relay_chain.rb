@@ -48,9 +48,9 @@ module FunctionChain
   #   # use add_all method
   #   chain.add_all(:decorate1, :decorate2).call("Hello")
   #
-  # insert, insert method is insert_all method to chain.
-  # delete_at method is delete method from chain.
-  # clear method is delete all method from chain.
+  # insert, insert_all method is insert function to chain.
+  # delete_at method is delete function from chain.
+  # clear method is delete all function from chain.
   #
   # === How to connect method of differed instance
   # Example, following two class.

@@ -43,6 +43,7 @@ module FunctionChain
   #
   # insert, insert_all method is insert_all method to chain.
   # delete_at method is delete method from chain.
+  # clear method is delete all method from chain.
   #
   # === Require arguments on method
   # Following example is required two arguments.

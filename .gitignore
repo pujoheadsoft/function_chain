@@ -1,6 +1,7 @@
 /.bundle/
 /.yardoc
 /Gemfile.lock
+/Guardfile
 /_yardoc/
 /coverage/
 /doc/
@@ -12,3 +13,4 @@
 *.o
 *.a
 mkmf.log
+/.idea/

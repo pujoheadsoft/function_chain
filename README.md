@@ -1,7 +1,7 @@
 FunctionChain
 ====
 
-[![Build Status](https://travis-ci.org/pujoheadsoft/function_chain.svg)][travis]
+[![Build Status](http://img.shields.io/travis/pujoheadsoft/function_chain.svg)][travis]
 
 Description
 -----------

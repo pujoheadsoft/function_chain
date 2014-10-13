@@ -9,7 +9,7 @@ group :development do
 end
 
 group :test do
-  gem "coveralls", ">= 0.5.7"
+  gem 'coveralls', :require => false
   gem "rubocop", ">= 0.19"
   gem "rspec", ">= 3"
   gem "simplecov", ">= 0.9"

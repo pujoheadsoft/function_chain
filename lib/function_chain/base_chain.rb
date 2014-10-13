@@ -1,0 +1,87 @@
+module FunctionChain
+  # Base class of PullChain, RelayChain
+  class BaseChain
+    # Add call chains
+    def add_all(*functions)
+      insert_all(chain_elements.size, *functions)
+      self
+    end
+
+    # Add call chain
+    def add(function)
+      insert(chain_elements.size, function)
+    end
+
+    # Insert call chains
+    def insert_all(index, *functions)
+      functions.each_with_index { |f, i| insert(index + i, f) }
+      self
+    end
+
+    # Insert call chain
+    def insert(index, function)
+      if function.is_a? String
+        do_insert_by_string(index, function)
+      else
+        do_insert(index, function)
+      end
+      self
+    end
+
+    # Delete call chain
+    def delete_at(index)
+      chain_elements.delete_at(index)
+      self
+    end
+
+    def to_s
+      "#{self.class}#{chain_elements.map(&:to_s)}"
+    end
+
+    protected
+
+    def do_insert(index, function)
+      chain_element = create_chain_element(function)
+      chain_elements.insert(index, chain_element)
+      def_to_s(chain_element, function)
+    end
+
+    def do_insert_by_string(index, function)
+      function.split(%r{(?<!\\)/}).reject(&:empty?).each_with_index do |f, i|
+        splitted_function = f.gsub(%r{\\/}, "/")
+        chain_element = create_chain_element(splitted_function)
+        chain_elements.insert(index + i, chain_element)
+        def_to_s(chain_element, splitted_function)
+      end
+    end
+
+    def create_chain_element(function)
+      case function
+      when Symbol then create_chain_element_by_symbol(function)
+      when Array then create_chain_element_by_array(function)
+      when String then create_chain_element_by_string(function)
+      else
+        fail ArgumentError, <<-EOF.gsub(/^\s+|\n/, "")
+        Not supported type #{function}(#{function.class}),
+        supported type is #{supported_types}.
+        EOF
+      end
+    end
+
+    def def_to_s(target, value)
+      target.singleton_class.class_eval do
+        define_method :to_s do
+          value
+        end
+      end
+    end
+
+    def chain_elements
+      @chain_elements ||= []
+    end
+
+    def supported_types
+      [Symbol, Array, String]
+    end
+  end
+end

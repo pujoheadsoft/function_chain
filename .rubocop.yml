@@ -1,0 +1,41 @@
+HashSyntax:
+  EnforcedStyle: ruby19
+  SupportedStyles:
+    - ruby19
+    - hash_rockets
+
+Documentation:
+  Enabled: false
+
+LineLength:
+  Enabled: false
+
+ClassLength:
+  Enabled: false
+
+RegexpLiteral:
+  MaxSlashes: 0
+
+GuardClause:
+  MinBodyLength: 3
+
+TrivialAccessors:
+  AllowPredicates: true
+
+RedundantReturn:
+  AllowMultipleReturnValues: true
+
+RedundantBegin:
+  Enabled: false
+
+SpaceInsideHashLiteralBraces:
+  EnforcedStyle: no_space
+
+Style/Lambda:
+  Enabled: false
+
+Style/Proc:
+  Enabled: false
+
+StringLiterals:
+  EnforcedStyle: double_quotes

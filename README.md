@@ -24,6 +24,4 @@ TODO
 
 License
 -------
-Released under the MIT License.  See the [LICENSE][] file for further details.
-
-[license]: LICENSE.md
+Released under the MIT License.

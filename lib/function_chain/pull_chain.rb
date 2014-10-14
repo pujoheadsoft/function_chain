@@ -197,23 +197,10 @@ module FunctionChain
     end
 
     def create_chain_element_by_array(array)
-      validate_array_length(array)
-      validate_element_type_of_array(array)
+      validate_array_length(array, 2, "symbol, [*args] or Proc")
+      validate_element_type_of_array(array, 1, [Array, Proc], "[*args] or Proc")
+
       do_create_chain_element_by_array(array[0], array[1])
-    end
-
-    def validate_array_length(array)
-      unless 2 == array.length
-        fail ArgumentError, "Format Wrong #{array}," \
-          " expected format is [symbol, [*args] or Proc]"
-      end
-    end
-
-    def validate_element_type_of_array(array)
-      unless array[1].is_a?(Proc) || array[1].is_a?(Array)
-        fail ArgumentError, "Format Wrong #{array}," \
-          " second element of array is must be [*args] or Proc"
-      end
     end
 
     def do_create_chain_element_by_array(name, array_function_param)
@@ -276,11 +263,20 @@ module FunctionChain
     end
 
     def inject_result_accessor(receiver)
-      accessor = result_accessor
-      # interception method_missing
+      store_method_missing(receiver)
+      define_intercepted_method_missing(receiver)
+    end
+
+    def store_method_missing(receiver)
       receiver.singleton_class.class_eval do
         alias_method :original_method_missing, :method_missing
+      end
+    end
 
+    def define_intercepted_method_missing(receiver)
+      # interception method_missing
+      accessor = result_accessor
+      receiver.singleton_class.class_eval do
         define_method :method_missing do |name, *args, &block|
           super(name, *args, &block) unless accessor.respond_to? name
           accessor.send(name, *args, &block)

@@ -200,12 +200,9 @@ module FunctionChain
 
     def create_chain_element(function)
       case function
-      when Method
-        create_chain_element_by_method(function)
-      when Proc
-        function
-      else
-        super(function)
+      when Method then create_chain_element_by_method(function)
+      when Proc then function
+      else super(function)
       end
     end
 
@@ -216,32 +213,14 @@ module FunctionChain
     end
 
     def create_chain_element_by_method(method)
-      create_common_chain_element do |*args|
-        method.call(*args)
-      end
+      create_common_chain_element { |*args| method.call(*args) }
     end
 
-    def create_chain_element_by_array(array)
-      validate_array_length(array)
-      validate_element_type_of_array(array)
+    def create_chain_element_by_array(arr)
+      validate_array_length(arr, 2, "receiver, symbol or string of receiver's method name")
+      validate_element_type_of_array(arr, 1, [Symbol, String], "[Symbol or String]")
 
-      create_common_chain_element do |*args|
-        array[0].__send__(array[1], *args)
-      end
-    end
-
-    def validate_array_length(array)
-      unless 2 == array.length
-        fail ArgumentError, "Format Wrong #{array}, expected format is" \
-          " [receiver, symbol or string of receiver's method name]"
-      end
-    end
-
-    def validate_element_type_of_array(array)
-      unless array[1].is_a?(Symbol) || array[1].is_a?(String)
-        fail ArgumentError, "Format Wrong #{array}," \
-          " second element of array is must be Symbol or String"
-      end
+      create_common_chain_element { |*args| arr[0].__send__(arr[1], *args) }
     end
 
     def create_chain_element_by_symbol(symbol)

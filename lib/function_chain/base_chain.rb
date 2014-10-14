@@ -81,6 +81,24 @@ module FunctionChain
       end
     end
 
+    def validate_array_length(arr, expect_length, expect_format)
+      unless expect_length == arr.length
+        message = "Format Wrong #{arr}, expected format is [#{expect_format}]"
+        fail ArgumentError, message
+      end
+    end
+
+    def validate_element_type_of_array(arr, i, expect_types, types_as_string)
+      unless target_is_a_one_of_types?(arr[i], expect_types)
+        fail ArgumentError, "Format Wrong #{arr}," \
+          " second element of array is must be #{types_as_string}"
+      end
+    end
+
+    def target_is_a_one_of_types?(target, types)
+      types.any? { |type| target.is_a? type }
+    end
+
     def chain_elements
       @chain_elements ||= []
     end

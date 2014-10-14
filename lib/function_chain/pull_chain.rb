@@ -124,10 +124,10 @@ module FunctionChain
   #
   # Note:use operator in string type chain
   #   table = {name: %w(Bill Scott Paul)}
-  #   PullChain.new(%w(Bill Scott Paul), "[:name]").call # NG
-  #   PullChain.new(%w(Bill Scott Paul), "self[:name]").call # OK
+  #   PullChain.new(table, "[:name]").call # NG
+  #   PullChain.new(table, "self[:name]").call # OK
   #   # Array type chain
-  #   PullChain.new(%w(Bill Scott Paul), [:[], [:name]]).call # OK
+  #   PullChain.new(table, [:[], [:name]]).call # OK
   #
   # following is also the same.
   #   # <<operator of String

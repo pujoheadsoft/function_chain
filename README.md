@@ -24,24 +24,24 @@ Chain object can following.
 PullChain & RelayChain will support call chain type, each different.
 
 * PullChain to support the type such as the following:
-```ruby
-account.user.name
-```
-If used the PullChain (detail description is [here](#PullChain))
-```ruby
-chain = PullChain.new(account) << :user << :name
-chain.call
+  ```ruby
+  account.user.name
+  ```
+  If used the PullChain (detail description is [here](#pullchain))
+  ```ruby
+  chain = PullChain.new(account) << :user << :name
+  chain.call
 ```
 
 * RelayChain to support the type such as the following:
-```ruby
-filter3(filter2(filter1(value)))
-```
-If used the RelayChain (detail description is [here](#RelayChain))
-```ruby
-chain = RelayChain.new >> :filter1 >> :filter2 >> :filter3
-chain.call("XXX")
-```
+  ```ruby
+  filter3(filter2(filter1(value)))
+  ```
+  If used the RelayChain (detail description is [here](#relaychain))
+  ```ruby
+  chain = RelayChain.new >> :filter1 >> :filter2 >> :filter3
+  chain.call("XXX")
+  ```
 
 
 ## Usage and documentation
@@ -66,26 +66,26 @@ chain.call # => LOUIS
 
 #### similar
 1. **Strings separated by a slash.**
-```ruby
-PullChain.new(account, "user/name/upcase").call
-```
+  ```ruby
+  PullChain.new(account, "user/name/upcase").call
+  ```
 
-* **use << operator.**
-```ruby
-chain = PullChain.new(account)
-chain << :user << :name << :upcase
-chain.call
-```
+2. **use << operator.**
+  ```ruby
+  chain = PullChain.new(account)
+  chain << :user << :name << :upcase
+  chain.call
+  ```
 
-* **use add method.**
-```ruby
-chain.add(:user).add(:name).add(:upcase).call
-```
+3. **use add method.**
+  ```ruby
+  chain.add(:user).add(:name).add(:upcase).call
+  ```
 
-* **use add_all method.**
-```ruby
-chain.add_all(:user, :name, :upcase).call
-```
+4. **use add_all method.**
+  ```ruby
+  chain.add_all(:user, :name, :upcase).call
+  ```
 
 #### Can exist nil value on the way, like a following case.
 ```ruby
@@ -110,16 +110,16 @@ end
 ```
 ###### Solution
 1. **Array, format is [Symbol, [\*Args]].**
-```ruby
-chain = PullChain.new(Foo.new) << [:say, ["Andres", "Hello"]]
-chain.call # => Andres said 'Hello'
-```
+  ```ruby
+  chain = PullChain.new(Foo.new) << [:say, ["Andres", "Hello"]]
+  chain.call # => Andres said 'Hello'
+  ```
 
-* **String**
-```ruby
-chain = PullChain.new(foo) << "say('John', 'Goodbye')"
-chain.call # => John said 'Goodbye'
-```
+2. **String**
+  ```ruby
+  chain = PullChain.new(foo) << "say('John', 'Goodbye')"
+  chain.call # => John said 'Goodbye'
+  ```
 
 ### Require block on method
 Following example's method is require Block.  
@@ -131,18 +131,18 @@ What should do in this case?
 ###### Solution
 
 1. **Array, format is [Symbol, [\*Args, Proc]].**
-```ruby
-chain = PullChain.new([1,2,3,4,5])
-chain << [:inject, [3, lambda { |sum, n| sum + n }]]
-chain.call # => 18
-```
+  ```ruby
+  chain = PullChain.new([1,2,3,4,5])
+  chain << [:inject, [3, lambda { |sum, n| sum + n }]]
+  chain.call # => 18
+  ```
 
-* **String**
-```ruby
-chain = PullChain.new([1,2,3,4,5])
-chain << "inject(3) { |sum, n| sum + n }"
-chain.call # => 18
-```
+2. **String**
+  ```ruby
+  chain = PullChain.new([1,2,3,4,5])
+  chain << "inject(3) { |sum, n| sum + n }"
+  chain.call # => 18
+  ```
 
 ### Use result on chain
 Like a following example, can use result on chain.
@@ -163,51 +163,51 @@ foo = Foo.new(Bar.new(Baz.new))
 ###### Example: use result on chain
 
 1. **String**  
-Can use bar instance in backward!
-```ruby
-chain = PullChain.new(foo) << "bar/baz/say(bar.speaker, 'Good!')"
-chain.call # => Julian said 'Good!'
-```
-Furthermore, can use variable name assigned.  
-@b is bar instance alias.
-```ruby
-chain = PullChain.new(foo) << "@b = bar/baz/say(b.speaker, 'Cool')"
-chain.call # => Julian said 'Cool'
-```
+  Can use bar instance in backward!
+  ```ruby
+  chain = PullChain.new(foo) << "bar/baz/say(bar.speaker, 'Good!')"
+  chain.call # => Julian said 'Good!'
+  ```
+  Furthermore, can use variable name assigned.  
+  @b is bar instance alias.
+  ```ruby
+  chain = PullChain.new(foo) << "@b = bar/baz/say(b.speaker, 'Cool')"
+  chain.call # => Julian said 'Cool'
+  ```
 
-* **Array**  
-Can access result by Proc.
-```ruby
-chain = PullChain.new(foo) << :bar << :baz
-chain << [:say, Proc.new { next bar.speaker, "Oh" }]
-chain.call # => Julian said 'Oh'
-```
-Case of use a lambda, can use result access object explicit.
-```ruby
-chain = PullChain.new(foo) << :bar << :baz
-arg_reader = lambda { |accessor| next accessor.bar.speaker, "Oh" }
-chain << [:say, arg_reader]
-chain.call # => Julian said 'Oh'
-```
+2. **Array**  
+  Can access result by Proc.
+  ```ruby
+  chain = PullChain.new(foo) << :bar << :baz
+  chain << [:say, Proc.new { next bar.speaker, "Oh" }]
+  chain.call # => Julian said 'Oh'
+  ```
+  Case of use a lambda, can use result access object explicit.
+  ```ruby
+  chain = PullChain.new(foo) << :bar << :baz
+  arg_reader = lambda { |accessor| next accessor.bar.speaker, "Oh" }
+  chain << [:say, arg_reader]
+  chain.call # => Julian said 'Oh'
+  ```
 
 #### etc
 1. **How to use slash in strings separated by a slash.**  
-Like following, please escaped by backslash.
-```ruby
-chain = PullChain.new("AC") << "concat '\\/DC'"
-chain.call # => AC/DC
-```
-* **Use return_nil_at_error= method, then can ignore error.**
-```ruby
-chain = PullChain.new("Test") << :xxx
-begin
-    chain.call # => undefined method `xxx'
-rescue
-end
-chain.return_nil_at_error = true
-chain.call # => nil
-```
-* **Note:use operator in chain**
+  Like following, please escaped by backslash.
+  ```ruby
+  chain = PullChain.new("AC") << "concat '\\/DC'"
+  chain.call # => AC/DC
+  ```
+2. **Use return_nil_at_error= method, then can ignore error.**
+  ```ruby
+  chain = PullChain.new("Test") << :xxx
+  begin
+      chain.call # => undefined method `xxx'
+  rescue
+  end
+  chain.return_nil_at_error = true
+  chain.call # => nil
+  ```
+3. **Note:use operator in chain**
   * **String type chain**
   ```ruby
   table = {name: %w(Bill Scott Paul)}
@@ -233,10 +233,10 @@ chain.call # => nil
   PullChain.new(%w(Donald Walter), "self[1]").call # OK => Walter
   ```
 
-* **Some classes, such Fixnum and Bignum not supported.**  
-```ruby
-PullChain.new(999999999999999, "self % 2").call # NG
-```
+4. **Some classes, such Fixnum and Bignum not supported.**  
+  ```ruby
+  PullChain.new(999999999999999, "self % 2").call # NG
+  ```
 
 ---
 ## RelayChain
@@ -259,30 +259,30 @@ chain.call("Hello") # => { ( Hello ) }
 ```
 #### similar
 1. **Strings separated by a slash.**
-```ruby
-chain = RelayChain.new(Decorator.new, "decorate1/decorate2")
-chain.call("Hello")
-```
-* **Use >> operator.**
-```ruby
-chain = RelayChain.new(Decorator.new)
-chain >> :decorate1 >> :decorate2
-chain.call("Hello")
-```
-* **Use Method object.**
-```ruby
-chain = RelayChain.new
-chain >> decorator.method(:decorate1) >> decorator.method(:decorate2)
-chain.call("Hello")
-```
-* **Use add method.**
-```ruby
-chain.add(:decorate1).add(:decorate2).call("Hello")
-```
-* **Use add_all method.**
-```ruby
-chain.add_all(:decorate1, :decorate2).call("Hello")
-```
+  ```ruby
+  chain = RelayChain.new(Decorator.new, "decorate1/decorate2")
+  chain.call("Hello")
+  ```
+2. **Use >> operator.**
+  ```ruby
+  chain = RelayChain.new(Decorator.new)
+  chain >> :decorate1 >> :decorate2
+  chain.call("Hello")
+  ```
+3. **Use Method object.**
+  ```ruby
+  chain = RelayChain.new
+  chain >> decorator.method(:decorate1) >> decorator.method(:decorate2)
+  chain.call("Hello")
+  ```
+4. **Use add method.**
+  ```ruby
+  chain.add(:decorate1).add(:decorate2).call("Hello")
+  ```
+5. **Use add_all method.**
+  ```ruby
+  chain.add_all(:decorate1, :decorate2).call("Hello")
+  ```
 
 #### Insert, Delete, Clear
 insert, insert_all method is insert function to chain.  
@@ -310,7 +310,7 @@ end
 ```
 ###### Solution
 1. **Array, format is [instance, Symbol or String of method]**
-```ruby
+  ```ruby
   # Symbol ver.
   chain = RelayChain.new(Decorator.new)
   chain >> :decorate1 >> :decorate2 >> [Decorator2.new, :decorate]
@@ -320,9 +320,9 @@ end
   chain = RelayChain.new(Decorator.new)
   chain >> :decorate1 >> :decorate2 >> [Decorator2.new, "decorate"]
   chain.call("Hello") # => [ { ( Hello ) } ]
-```
-* **String, use registered instance.**
-```ruby
+  ```
+2. **String, use registered instance.**
+  ```ruby
   chain = RelayChain.new(Decorator.new)
 
   # register name and instance
@@ -334,7 +334,7 @@ end
 
   # add_receiver_table method is register name and instance at once.
   chain.add_receiver_table({"x" => X.new, "y" => Y.new})
-```
+  ```
 
 ### Case of method's output and method's input mismatch
 Following example, decorate output is 1, and union input is 2.  
@@ -351,7 +351,7 @@ end
 ```
 ###### Solution
 1. **Define connect method.**
-```ruby
+  ```ruby
   class Decorator
     def connect(value)
       return value, "Palmer"
@@ -360,8 +360,8 @@ end
   chain = RelayChain.new(Decorator.new)
   chain >> :decorate >> :connect >> :union
   chain.call("Emerson, Lake") # => Emerson, Lake And Palmer
-```
-* **Add lambda or Proc to between these methods.**  
+  ```
+2. **Add lambda or Proc to between these methods.**  
   lambda's format is following.
   ```ruby
   # parameter: chain is chain object.  

@@ -259,30 +259,34 @@ chain.call("Hello") # => { ( Hello ) }
 ```
 #### Similar
 1. **Strings separated by a slash**
-```ruby
+  ```ruby
   chain = RelayChain.new(Decorator.new, "decorate1/decorate2")
   chain.call("Hello")
-```
+  ```
+
 2. **Use >> operator**
-```ruby
+  ```ruby
   chain = RelayChain.new(Decorator.new)
   chain >> :decorate1 >> :decorate2
   chain.call("Hello")
-```
+  ```
+
 3. **Use Method object**
-```ruby
+  ```ruby
   chain = RelayChain.new
   chain >> decorator.method(:decorate1) >> decorator.method(:decorate2)
   chain.call("Hello")
-```
+  ```
+
 4. **Use add method**
-```ruby
+  ```ruby
   chain.add(:decorate1).add(:decorate2).call("Hello")
-```
+  ```
+
 5. **Use add_all method**
-```ruby
+  ```ruby
   chain.add_all(:decorate1, :decorate2).call("Hello")
-```
+  ```
 
 #### Insert, Delete, Clear
 insert, insert_all method is insert function to chain.  

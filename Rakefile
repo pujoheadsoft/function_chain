@@ -1,6 +1,7 @@
 require "bundler/gem_tasks"
-require "rspec/core/rake_task"
-
-RSpec::Core::RakeTask.new(:spec)
 
 task default: :spec
+
+task quality: [:flog, :flay]
+
+Dir.glob('tasks/*.rake').each { |each| import each }

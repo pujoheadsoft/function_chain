@@ -3,7 +3,7 @@ FunctionChain
 
 [![Build Status](http://img.shields.io/travis/pujoheadsoft/function_chain.svg)][travis]
 [![Coverage Status](http://img.shields.io/coveralls/pujoheadsoft/function_chain.svg)][coveralls]
-[![Code Climate](http://img.shields.io/codeclimate/github/pujoheadsoft/function_chain.svg)]
+[![Code Climate](http://img.shields.io/codeclimate/github/pujoheadsoft/function_chain.svg)][codeclimate]
 
 [travis]: http://travis-ci.org/pujoheadsoft/function_chain
 [coveralls]: https://coveralls.io/r/pujoheadsoft/function_chain

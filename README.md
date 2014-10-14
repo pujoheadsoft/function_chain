@@ -64,30 +64,30 @@ chain = PullChain.new(account, :user, :name, :upcase)
 chain.call # => LOUIS
 ```
 
-#### similar
-1. **Strings separated by a slash.**
+#### Similar
+1. **Strings separated by a slash**
   ```ruby
   PullChain.new(account, "user/name/upcase").call
   ```
 
-2. **use << operator.**
+2. **Use << operator**
   ```ruby
   chain = PullChain.new(account)
   chain << :user << :name << :upcase
   chain.call
   ```
 
-3. **use add method.**
+3. **Use add method**
   ```ruby
   chain.add(:user).add(:name).add(:upcase).call
   ```
 
-4. **use add_all method.**
+4. **Use add_all method**
   ```ruby
   chain.add_all(:user, :name, :upcase).call
   ```
 
-#### Can exist nil value on the way, like a following case.
+#### Can exist nil value on the way, like a following case
 ```ruby
 user.name = nil
 chain.call # => nil
@@ -109,7 +109,7 @@ class Foo
 end
 ```
 ###### Solution
-1. **Array, format is [Symbol, [\*Args]].**
+1. **Array, format is [Symbol, [\*Args]]**
   ```ruby
   chain = PullChain.new(Foo.new) << [:say, ["Andres", "Hello"]]
   chain.call # => Andres said 'Hello'
@@ -191,13 +191,13 @@ foo = Foo.new(Bar.new(Baz.new))
   ```
 
 #### etc
-1. **How to use slash in strings separated by a slash.**  
+1. **How to use slash in strings separated by a slash**  
   Like following, please escaped by backslash.
   ```ruby
   chain = PullChain.new("AC") << "concat '\\/DC'"
   chain.call # => AC/DC
   ```
-2. **Use return_nil_at_error= method, then can ignore error.**
+2. **Use return_nil_at_error= method, then can ignore error**
   ```ruby
   chain = PullChain.new("Test") << :xxx
   begin
@@ -209,31 +209,31 @@ foo = Foo.new(Bar.new(Baz.new))
   ```
 3. **Note:use operator in chain**
   * **String type chain**
-  ```ruby
-  table = {name: %w(Bill Scott Paul)}
-  PullChain.new(table, "[:name]").call # => [:name] NG
-  PullChain.new(table, "self[:name]").call # => ["Bill", "Scott", "Paul"] OK
-  ```
+    ```ruby
+    table = {name: %w(Bill Scott Paul)}
+    PullChain.new(table, "[:name]").call # => [:name] NG
+    PullChain.new(table, "self[:name]").call # => ["Bill", "Scott", "Paul"] OK
+    ```
   * **Array type chain**
-  ```ruby
-  PullChain.new(table, [:[], [:name]]).call # OK
-  ```
+    ```ruby
+    PullChain.new(table, [:[], [:name]]).call # OK
+    ```
 
   Following is also the same.
 
   * **<< operator of String**
-  ```ruby
-  PullChain.new("Led", "<< ' Zeppelin'").call # NG syntax error
-  PullChain.new("Led", "self << ' Zeppelin'").call # => "Led Zeppelin"
-  ```
+    ```ruby
+    PullChain.new("Led", "<< ' Zeppelin'").call # NG syntax error
+    PullChain.new("Led", "self << ' Zeppelin'").call # => "Led Zeppelin"
+    ```
 
   * **[] operator of Array**
-  ```ruby
-  PullChain.new(%w(Donald Walter), "[1]").call # NG => [1]
-  PullChain.new(%w(Donald Walter), "self[1]").call # OK => Walter
-  ```
+    ```ruby
+    PullChain.new(%w(Donald Walter), "[1]").call # NG => [1]
+    PullChain.new(%w(Donald Walter), "self[1]").call # OK => Walter
+    ```
 
-4. **Some classes, such Fixnum and Bignum not supported.**  
+4. **Some classes, such Fixnum and Bignum not supported**  
   ```ruby
   PullChain.new(999999999999999, "self % 2").call # NG
   ```
@@ -257,32 +257,32 @@ end
 chain = RelayChain.new(Decorator.new, :decorate1, :decorate2)
 chain.call("Hello") # => { ( Hello ) }
 ```
-#### similar
-1. **Strings separated by a slash.**
-  ```ruby
+#### Similar
+1. **Strings separated by a slash**
+```ruby
   chain = RelayChain.new(Decorator.new, "decorate1/decorate2")
   chain.call("Hello")
-  ```
-2. **Use >> operator.**
-  ```ruby
+```
+2. **Use >> operator**
+```ruby
   chain = RelayChain.new(Decorator.new)
   chain >> :decorate1 >> :decorate2
   chain.call("Hello")
-  ```
-3. **Use Method object.**
-  ```ruby
+```
+3. **Use Method object**
+```ruby
   chain = RelayChain.new
   chain >> decorator.method(:decorate1) >> decorator.method(:decorate2)
   chain.call("Hello")
-  ```
-4. **Use add method.**
-  ```ruby
+```
+4. **Use add method**
+```ruby
   chain.add(:decorate1).add(:decorate2).call("Hello")
-  ```
-5. **Use add_all method.**
-  ```ruby
+```
+5. **Use add_all method**
+```ruby
   chain.add_all(:decorate1, :decorate2).call("Hello")
-  ```
+```
 
 #### Insert, Delete, Clear
 insert, insert_all method is insert function to chain.  
@@ -310,7 +310,7 @@ end
 ```
 ###### Solution
 1. **Array, format is [instance, Symbol or String of method]**
-  ```ruby
+```ruby
   # Symbol ver.
   chain = RelayChain.new(Decorator.new)
   chain >> :decorate1 >> :decorate2 >> [Decorator2.new, :decorate]
@@ -320,9 +320,9 @@ end
   chain = RelayChain.new(Decorator.new)
   chain >> :decorate1 >> :decorate2 >> [Decorator2.new, "decorate"]
   chain.call("Hello") # => [ { ( Hello ) } ]
-  ```
-2. **String, use registered instance.**
-  ```ruby
+```
+2. **String, use registered instance**
+```ruby
   chain = RelayChain.new(Decorator.new)
 
   # register name and instance
@@ -334,7 +334,7 @@ end
 
   # add_receiver_table method is register name and instance at once.
   chain.add_receiver_table({"x" => X.new, "y" => Y.new})
-  ```
+```
 
 ### Case of method's output and method's input mismatch
 Following example, decorate output is 1, and union input is 2.  
@@ -351,7 +351,7 @@ end
 ```
 ###### Solution
 1. **Define connect method.**
-  ```ruby
+```ruby
   class Decorator
     def connect(value)
       return value, "Palmer"
@@ -360,21 +360,21 @@ end
   chain = RelayChain.new(Decorator.new)
   chain >> :decorate >> :connect >> :union
   chain.call("Emerson, Lake") # => Emerson, Lake And Palmer
-  ```
+```
 2. **Add lambda or Proc to between these methods.**  
   lambda's format is following.
-  ```ruby
+```ruby
   # parameter: chain is chain object.  
   # parameter: \*args is previous functions output.
   lambda {|chain, *args| chain.call(next functions arguments) }.
-  ```
+```
   can call next function by chain object.
-  ```ruby
+```ruby
   chain = RelayChain.new(Decorator.new)
   arg_adder = lambda { |chain, value| chain.call(value, "Jerry") }
   chain >> :decorate >> arg_adder >> :union
   chain.call("Tom") # => Tom And Jerry
-  ```
+```
 
 ### Appendix
 **Chain stop by means of lambda.**

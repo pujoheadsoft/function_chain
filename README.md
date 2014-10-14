@@ -23,7 +23,7 @@ Chain object can following.
 **PullChain & RelayChain** is FunctionChain module's classes.  
 PullChain & RelayChain will support call chain type, each different.
 
-* PullChain to support the type such as the following:
+* PullChain to support the call chain type such as the following:
   ```ruby
   account.user.name
   ```
@@ -33,7 +33,7 @@ PullChain & RelayChain will support call chain type, each different.
   chain.call
 ```
 
-* RelayChain to support the type such as the following:
+* RelayChain to support the call chain type such as the following:
   ```ruby
   filter3(filter2(filter1(value)))
   ```
@@ -197,6 +197,7 @@ foo = Foo.new(Bar.new(Baz.new))
   chain = PullChain.new("AC") << "concat '\\/DC'"
   chain.call # => AC/DC
   ```
+
 2. **Use return_nil_at_error= method, then can ignore error**
   ```ruby
   chain = PullChain.new("Test") << :xxx
@@ -207,6 +208,7 @@ foo = Foo.new(Bar.new(Baz.new))
   chain.return_nil_at_error = true
   chain.call # => nil
   ```
+
 3. **Note:use operator in chain**
   * **String type chain**
     ```ruby
@@ -214,6 +216,7 @@ foo = Foo.new(Bar.new(Baz.new))
     PullChain.new(table, "[:name]").call # => [:name] NG
     PullChain.new(table, "self[:name]").call # => ["Bill", "Scott", "Paul"] OK
     ```
+
   * **Array type chain**
     ```ruby
     PullChain.new(table, [:[], [:name]]).call # OK
@@ -314,7 +317,7 @@ end
 ```
 ###### Solution
 1. **Array, format is [instance, Symbol or String of method]**
-```ruby
+  ```ruby
   # Symbol ver.
   chain = RelayChain.new(Decorator.new)
   chain >> :decorate1 >> :decorate2 >> [Decorator2.new, :decorate]
@@ -324,9 +327,10 @@ end
   chain = RelayChain.new(Decorator.new)
   chain >> :decorate1 >> :decorate2 >> [Decorator2.new, "decorate"]
   chain.call("Hello") # => [ { ( Hello ) } ]
-```
+  ```
+
 2. **String, use registered instance**
-```ruby
+  ```ruby
   chain = RelayChain.new(Decorator.new)
 
   # register name and instance
@@ -338,7 +342,7 @@ end
 
   # add_receiver_table method is register name and instance at once.
   chain.add_receiver_table({"x" => X.new, "y" => Y.new})
-```
+  ```
 
 ### Case of method's output and method's input mismatch
 Following example, decorate output is 1, and union input is 2.  
@@ -355,7 +359,7 @@ end
 ```
 ###### Solution
 1. **Define connect method.**
-```ruby
+  ```ruby
   class Decorator
     def connect(value)
       return value, "Palmer"
@@ -364,21 +368,22 @@ end
   chain = RelayChain.new(Decorator.new)
   chain >> :decorate >> :connect >> :union
   chain.call("Emerson, Lake") # => Emerson, Lake And Palmer
-```
+  ```
+
 2. **Add lambda or Proc to between these methods.**  
   lambda's format is following.
-```ruby
+  ```ruby
   # parameter: chain is chain object.  
   # parameter: \*args is previous functions output.
   lambda {|chain, *args| chain.call(next functions arguments) }.
-```
+  ```
   can call next function by chain object.
-```ruby
+  ```ruby
   chain = RelayChain.new(Decorator.new)
   arg_adder = lambda { |chain, value| chain.call(value, "Jerry") }
   chain >> :decorate >> arg_adder >> :union
   chain.call("Tom") # => Tom And Jerry
-```
+  ```
 
 ### Appendix
 **Chain stop by means of lambda.**

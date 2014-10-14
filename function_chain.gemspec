@@ -11,10 +11,10 @@ Gem::Specification.new do |spec|
   spec.summary       = "FunctionChain objectifies of the method chain."
   spec.description   = <<-EOF.gsub(/^\s+|\n/, "")
     FunctionChain objectifies of the method chain.
-    chain objects can call later or add chain or insert_all chain or delete chain.
+    chain objects can call later or add chain or insert chain or delete chain.
     supported chain type is following: foo.bar.baz, baz(bar(foo(value))).
   EOF
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/pujoheadsoft/function_chain"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")

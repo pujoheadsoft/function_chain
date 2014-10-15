@@ -130,7 +130,7 @@ What should do in this case?
 
 ###### Solution
 
-1. **Array, format is [Symbol, [\*Args, Proc]].**
+1. **Array, format is [Symbol, [\*Args, Proc]]**
   ```ruby
   chain = PullChain.new([1,2,3,4,5])
   chain << [:inject, [3, lambda { |sum, n| sum + n }]]
@@ -374,7 +374,7 @@ end
   lambda's format is following.
   ```ruby
   # parameter: chain is chain object.  
-  # parameter: \*args is previous functions output.
+  # parameter: *args is previous functions output.
   lambda {|chain, *args| chain.call(next functions arguments) }.
   ```
   can call next function by chain object.
@@ -411,7 +411,7 @@ end
 
 chain = RelayChain.new(Decorator.new, :decorate1, :decorate2)
 
-# insert_all conditional chain stopper
+# insert conditional chain stopper
 chain.insert(1, create_stopper { |value| value =~ /\d/ })
 chain.call("Van Halen 1984") # => ( Van Halen 1984 )     not enclosed to {}
 chain.call("Van Halen Jump") # => { ( Van Halen Jump ) } enclosed to {}

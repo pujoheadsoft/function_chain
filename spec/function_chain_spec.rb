@@ -24,6 +24,13 @@ describe FunctionChain::PullChain do
     }
     @city = City.new(BookStore.new(shelves, :mystery))
 
+    class Concatter
+      def concat(value1, value2)
+        "#{value1} to #{value2}"
+      end
+    end
+    @concatter = Concatter.new
+
     PullChain = FunctionChain::PullChain
   end
 
@@ -64,6 +71,12 @@ describe FunctionChain::PullChain do
     chain = PullChain.new(@city) << :bookstore
     chain << :shelves << [:[], Proc.new { |_| bookstore.recommended_shelf }]
     expect(chain.call).to eq(@city.bookstore.shelves[:mystery])
+  end
+
+  it "[success case] array type function with proc(return multi value)" do
+    chain = PullChain.new(@concatter)
+    chain << [:concat, Proc.new { next "Stairway", "Heaven" }]
+    expect(chain.call).to eq(@concatter.concat("Stairway", "Heaven"))
   end
 
   it "[success case] string type function" do

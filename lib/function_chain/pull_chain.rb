@@ -212,12 +212,12 @@ module FunctionChain
 
     def extract_args_and_block(array_function_param)
       if array_function_param.is_a? Proc
-        return result_accessor.instance_eval(&array_function_param)
+        return result_accessor.instance_eval(&array_function_param), nil
       end
       if array_function_param.last.is_a? Proc
         return array_function_param[0...-1], array_function_param.last
       end
-      array_function_param
+      return array_function_param, nil
     end
 
     def create_chain_element_by_string(string)

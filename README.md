@@ -375,7 +375,8 @@ end
   ```ruby
   # parameter: chain is chain object.  
   # parameter: *args is previous functions output.
-  lambda {|chain, *args| chain.call(next functions arguments) }.
+  # *args_of_next_func is next functions input.
+  lambda {|chain, *args| chain.call( *args_of_next_func ) }.
   ```
   can call next function by chain object.
   ```ruby

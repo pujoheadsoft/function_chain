@@ -193,7 +193,7 @@ module FunctionChain
     protected
 
     def supported_types
-      super() | [Method, Proc]
+      super() | [Method]
     end
 
     private
@@ -201,7 +201,6 @@ module FunctionChain
     def create_chain_element(function)
       case function
       when Method then create_chain_element_by_method(function)
-      when Proc then function
       else super(function)
       end
     end
@@ -240,6 +239,10 @@ module FunctionChain
           @common_receiver.__send__(string, *args)
         end
       end
+    end
+
+    def create_chain_element_by_proc(proc)
+      proc
     end
 
     def receiver_table

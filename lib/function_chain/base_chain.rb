@@ -8,8 +8,10 @@ module FunctionChain
     end
 
     # Add function to chain
-    def add(function)
-      insert(chain_elements.size, function)
+    #
+    # Example: add(value) or add { your code }
+    def add(function = nil, &block)
+      insert(chain_elements.size, function, &block)
     end
 
     # Insert functions to chain
@@ -19,11 +21,14 @@ module FunctionChain
     end
 
     # Insert function to chain
-    def insert(index, function)
-      if function.is_a? String
-        do_insert_by_string(index, function)
-      else
-        do_insert(index, function)
+    #
+    # Example: insert(i, value) or insert(i) { your code }
+    def insert(index, function = nil, &block)
+      validate_exclusive_value(function, block)
+      case function
+      when String then do_insert_by_string(index, function)
+      when NilClass then do_insert(index, block)
+      else do_insert(index, function)
       end
       self
     end
@@ -37,6 +42,7 @@ module FunctionChain
     # Clear function chain
     def clear
       chain_elements.clear
+      self
     end
 
     def to_s
@@ -65,11 +71,11 @@ module FunctionChain
       when Symbol then create_chain_element_by_symbol(function)
       when Array then create_chain_element_by_array(function)
       when String then create_chain_element_by_string(function)
-      else
-        fail ArgumentError, <<-EOF.gsub(/^\s+|\n/, "")
+      when Proc then create_chain_element_by_proc(function)
+      else fail ArgumentError, <<-EOF.gsub(/^\s+|\n/, "")
         Not supported type #{function}(#{function.class}),
         supported type is #{supported_types}.
-        EOF
+      EOF
       end
     end
 
@@ -104,7 +110,19 @@ module FunctionChain
     end
 
     def supported_types
-      [Symbol, Array, String]
+      [Symbol, Array, String, Proc]
+    end
+
+    def validate_exclusive_value(function, block)
+      prefix = nil
+      if function.nil? && block.nil?
+        prefix = "Both value and the block is unspecified."
+      elsif function && block
+        prefix = "Both of value and block is specified."
+      end
+      if prefix
+        fail ArgumentError, "#{prefix} Please specify either value or block."
+      end
     end
   end
 end

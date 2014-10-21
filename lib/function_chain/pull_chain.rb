@@ -247,6 +247,12 @@ module FunctionChain
       end
     end
 
+    def create_chain_element_by_proc(proc)
+      create_common_chain_element do |receiver|
+        next "#{proc}", receiver.instance_eval(&proc)
+      end
+    end
+
     def execute(receiver, name, *args, &block)
       receiver.__send__(name, *args, &block)
     end

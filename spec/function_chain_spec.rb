@@ -116,6 +116,21 @@ describe FunctionChain::PullChain do
     expect(chain.call).to eq("AC".concat("/DC"))
   end
 
+  it "[success case] proc type function" do
+    chain = PullChain.new(@city) << Proc.new { bookstore }
+    chain << Proc.new { shelves[:programing] } << Proc.new { books[1] }
+    chain << Proc.new { title }
+    title = @city.bookstore.shelves[:programing].books[1].title
+    expect(chain.call).to eq(title)
+  end
+
+  it "[success case] block type function" do
+    chain = PullChain.new(@city).add { bookstore }
+    chain.add { shelves[:programing] }.add { books[1] }.add { title }
+    title = @city.bookstore.shelves[:programing].books[1].title
+    expect(chain.call).to eq(title)
+  end
+
   it "[success case] mix type string, symbol, array" do
     chain = PullChain.new(@city)
     chain.add_all(:bookstore, "shelves[:programing]")
@@ -124,14 +139,21 @@ describe FunctionChain::PullChain do
     expect(chain.call).to eq(title)
   end
 
-  it "[success case] insert_all" do
+  it "[success case] insert" do
     chain = PullChain.new(@city, "/bookstore/shelves[:programing]/title")
     chain.insert(2, "books[1]")
     title = @city.bookstore.shelves[:programing].books[1].title
     expect(chain.call).to eq(title)
   end
 
-  it "[success case] inserts" do
+  it "[success case] insert block" do
+    chain = PullChain.new(@city, "/bookstore/shelves[:programing]/title")
+    chain.insert(2) { books[1] }
+    title = @city.bookstore.shelves[:programing].books[1].title
+    expect(chain.call).to eq(title)
+  end
+
+  it "[success case] insert_all" do
     chain = PullChain.new(@city, "/bookstore/title")
     chain.insert_all(1, "shelves[:programing]", "books[1]")
     title = @city.bookstore.shelves[:programing].books[1].title
@@ -224,6 +246,38 @@ describe FunctionChain::PullChain do
     end.to raise_error(ArgumentError)
   end
 
+  it "[fail case] add empty" do
+    msg = "Both value and the block is unspecified. " \
+          "Please specify either value or block."
+    expect do
+      PullChain.new(@city).add
+    end.to raise_error(ArgumentError, msg)
+  end
+
+  it "[fail case] add both arg & block" do
+    msg = "Both of value and block is specified. " \
+          "Please specify either value or block."
+    expect do
+      PullChain.new(@city).add(:bookstore) {}
+    end.to raise_error(ArgumentError, msg)
+  end
+
+  it "[fail case] insert empty" do
+    msg = "Both value and the block is unspecified. " \
+          "Please specify either value or block."
+    expect do
+      PullChain.new(@city).insert(0)
+    end.to raise_error(ArgumentError, msg)
+  end
+
+  it "[fail case] insert both arg & block" do
+    msg = "Both of value and block is specified. " \
+          "Please specify either value or block."
+    expect do
+      PullChain.new(@city).insert(0, :bookstore) {}
+    end.to raise_error(ArgumentError, msg)
+  end
+
   %w(! " ' # % & ( ) = ~ \\ ` @ [ ] * + < > ? 1 ; : . , ^).each do |e|
     it "[fail case] ArgumentError:wrong format variable define #{e}" do
       expect do
@@ -231,7 +285,6 @@ describe FunctionChain::PullChain do
       end.to raise_error(ArgumentError)
     end
   end
-
 end
 
 describe FunctionChain::RelayChain do
@@ -379,11 +432,28 @@ describe FunctionChain::RelayChain do
     expect(chain.call(array)).to eq(value)
   end
 
+  it "[success case] use block" do
+    chain = RelayChain.new
+    chain.add { |c, arr| c.call(arr.select(&:even?)) }
+    chain.add { |_, arr| arr.map { |num| num * 10 } }
+    array = [1, 2, 3, 4, 5]
+    value = array.select(&:even?).map { |num| num * 10 }
+    expect(chain.call(array)).to eq(value)
+  end
+
   it "[success case] stop of chain" do
     chain = RelayChain.new(@decorator)
     chain.add_all(:decorate1, :decorate2, [@enclose_decorator, :decorate])
     stopper = lambda { |_, value| value }
     chain.insert(2, stopper)
+    decorated_value = @decorator.decorate2(@decorator.decorate1("Montgomery"))
+    expect(chain.call("Montgomery")).to eq(decorated_value)
+  end
+
+  it "[success case] stop of chain block ver" do
+    chain = RelayChain.new(@decorator)
+    chain.add_all(:decorate1, :decorate2, [@enclose_decorator, :decorate])
+    chain.insert(2) { |_, value| value }
     decorated_value = @decorator.decorate2(@decorator.decorate1("Montgomery"))
     expect(chain.call("Montgomery")).to eq(decorated_value)
   end
@@ -412,6 +482,38 @@ describe FunctionChain::RelayChain do
     expect do
       RelayChain.new(@decorator) >> [@enclose_decorator, 10]
     end.to raise_error(ArgumentError)
+  end
+
+  it "[fail case] add empty" do
+    msg = "Both value and the block is unspecified. " \
+          "Please specify either value or block."
+    expect do
+      RelayChain.new(@decorator).add
+    end.to raise_error(ArgumentError, msg)
+  end
+
+  it "[fail case] add both arg & block" do
+    msg = "Both of value and block is specified. " \
+          "Please specify either value or block."
+    expect do
+      RelayChain.new(@decorator).add(:decorate1) {}
+    end.to raise_error(ArgumentError, msg)
+  end
+
+  it "[fail case] insert empty" do
+    msg = "Both value and the block is unspecified. " \
+          "Please specify either value or block."
+    expect do
+      RelayChain.new(@decorator).insert(0)
+    end.to raise_error(ArgumentError, msg)
+  end
+
+  it "[fail case] insert both arg & block" do
+    msg = "Both of value and block is specified. " \
+          "Please specify either value or block."
+    expect do
+      RelayChain.new(@decorator).insert(0, :decorate1) {}
+    end.to raise_error(ArgumentError, msg)
   end
 
 end

@@ -70,21 +70,47 @@ chain.call # => LOUIS
   PullChain.new(account, "user/name/upcase").call
   ```
 
-2. **Use << operator**
+2. **Use <<**
   ```ruby
   chain = PullChain.new(account)
   chain << :user << :name << :upcase
   chain.call
   ```
 
-3. **Use add method**
+3. **Use *add***
   ```ruby
   chain.add(:user).add(:name).add(:upcase).call
   ```
 
-4. **Use add_all method**
+4. **Use *add_all***
   ```ruby
   chain.add_all(:user, :name, :upcase).call
+  ```
+
+5. **Use *Proc***
+  ```ruby
+  chain << Proc.new { user } << Proc.new { name } << Proc.new { upcase }
+  chain = PullChain.new(account)
+  chain.call
+  ```
+  If you use *lambda* then can't omit block parameter.
+  block parameter is previous chain result.
+  ```ruby
+  chain << lambda { |account| account.user } << lambda { |user| user.name } << lambda { |name| name.upcase }
+  chain = PullChain.new(account)
+  chain.call
+  ```
+  *lambda* evaluate by previous chain result, so can call results method direct.
+    ```ruby
+  chain = PullChain.new(account)
+  chain << lambda { |_| user } << lambda { |_| name } << lambda { |_| upcase }
+  chain.call
+  ```
+  if want to omit block parameter, recommend *Proc* use.
+
+6. **Use *add* with block**
+  ```ruby
+  PullChain.new(account).add { user }.add { name }.add { upcase }.call
   ```
 
 #### Can exist nil value on the way, like a following case
@@ -93,10 +119,34 @@ user.name = nil
 chain.call # => nil
 ```
 
-#### Insert, Delete, Clear
-insert, insert_all method is insert_all method to chain.  
-delete_at method is delete method from chain.  
-clear method is delete all method from chain.
+#### Insert
+*insert*, *insert_all* is insert method to chain.  
+```ruby
+chain = PullChain.new(account, :user, :upcase)
+chain.insert(1, :name).call
+
+chain = PullChain.new(account, :user)
+chain.insert_all(1, :name, :upcase).call
+```
+*insert* with block
+```ruby
+chain = PullChain.new(account, :user, :upcase)
+chain.insert(1) { name }.call
+```
+#### Delete
+*delete_at* is delete method from chain.
+```ruby
+chain = PullChain.new(account, :user, :name, :upcase)
+chain.delete_at(2)
+chain.call # => Louis
+```
+#### Clear
+*clear* is delete all method from chain.
+```ruby
+chain = PullChain.new(account, :user, :name, :upcase)
+chain.clear
+chain.call # => #<struct Account user=#<struct User name="Louis">>
+```
 
 ### Require arguments on method
 Following example's method is require two arguments.  
@@ -109,17 +159,29 @@ class Foo
 end
 ```
 ###### Solution
-1. **Array, format is [Symbol, [\*Args]]**
+1. ** *Array*, format is [*Symbol*, [\*args]]**
   ```ruby
   chain = PullChain.new(Foo.new) << [:say, ["Andres", "Hello"]]
   chain.call # => Andres said 'Hello'
   ```
 
-2. **String**
+2. ***String***
   ```ruby
-  chain = PullChain.new(foo) << "say('John', 'Goodbye')"
+  chain = PullChain.new(Foo.new) << "say('John', 'Goodbye')"
   chain.call # => John said 'Goodbye'
   ```
+
+3. ***Proc***
+```ruby
+chain = PullChain.new(Foo.new) << Proc.new { say('Julian', 'Nice to meet you') }
+chain.call # => Julian said 'Nice to meet you'
+```
+
+4. ** *add* with block**
+```ruby
+chain = PullChain.new(Foo.new).add { say('Narciso', 'How do you do?') }
+chain.call # => Narciso said 'How do you do?'
+```
 
 ### Require block on method
 Following example's method is require Block.  
@@ -130,19 +192,33 @@ What should do in this case?
 
 ###### Solution
 
-1. **Array, format is [Symbol, [\*Args, Proc]]**
+1. ** *Array*, format is [*Symbol*, [\*args, *Proc*]]**
   ```ruby
   chain = PullChain.new([1,2,3,4,5])
   chain << [:inject, [3, lambda { |sum, n| sum + n }]]
   chain.call # => 18
   ```
 
-2. **String**
+2. ** *String* **
   ```ruby
   chain = PullChain.new([1,2,3,4,5])
   chain << "inject(3) { |sum, n| sum + n }"
   chain.call # => 18
   ```
+
+3. ** *Proc* **
+  ```ruby
+  chain = PullChain.new([1,2,3,4,5])
+  chain << Proc.new { inject(3) { |sum, n| sum + n } }
+  chain.call # => 18
+  ```
+
+4. ** *add* with block **
+```ruby
+chain = PullChain.new([1,2,3,4,5])
+chain.add { inject(3) { |sum, n| sum + n } }
+chain.call # => 18
+```
 
 ### Use result on chain
 Like a following example, can use result on chain.
@@ -162,7 +238,7 @@ foo = Foo.new(Bar.new(Baz.new))
 ```
 ###### Example: use result on chain
 
-1. **String**  
+1. ** *String* **  
   Can use bar instance in backward!
   ```ruby
   chain = PullChain.new(foo) << "bar/baz/say(bar.speaker, 'Good!')"
@@ -175,14 +251,14 @@ foo = Foo.new(Bar.new(Baz.new))
   chain.call # => Julian said 'Cool'
   ```
 
-2. **Array**  
-  Can access result by Proc.
+2. ** *Array* **  
+  Can access result by *Proc*.
   ```ruby
   chain = PullChain.new(foo) << :bar << :baz
   chain << [:say, Proc.new { next bar.speaker, "Oh" }]
   chain.call # => Julian said 'Oh'
   ```
-  Case of use a lambda, can use result access object explicit.
+  Case of use a *lambda*, can use result access object explicit.
   ```ruby
   chain = PullChain.new(foo) << :bar << :baz
   arg_reader = lambda { |accessor| next accessor.bar.speaker, "Oh" }
@@ -198,7 +274,7 @@ foo = Foo.new(Bar.new(Baz.new))
   chain.call # => AC/DC
   ```
 
-2. **Use return_nil_at_error= method, then can ignore error**
+2. **Use *return_nil_at_error=*, then can ignore error**
   ```ruby
   chain = PullChain.new("Test") << :xxx
   begin
@@ -210,14 +286,14 @@ foo = Foo.new(Bar.new(Baz.new))
   ```
 
 3. **Note:use operator in chain**
-  * **String type chain**
+  * ** *String* type chain**
     ```ruby
     table = {name: %w(Bill Scott Paul)}
     PullChain.new(table, "[:name]").call # => [:name] NG
     PullChain.new(table, "self[:name]").call # => ["Bill", "Scott", "Paul"] OK
     ```
 
-  * **Array type chain**
+  * ** *Array* type chain**
     ```ruby
     PullChain.new(table, [:[], [:name]]).call # OK
     ```
@@ -236,7 +312,7 @@ foo = Foo.new(Bar.new(Baz.new))
     PullChain.new(%w(Donald Walter), "self[1]").call # OK => Walter
     ```
 
-4. **Some classes, such Fixnum and Bignum not supported**  
+4. **Some classes, such *Fixnum* and *Bignum* not supported**  
   ```ruby
   PullChain.new(999999999999999, "self % 2").call # NG
   ```
@@ -244,7 +320,7 @@ foo = Foo.new(Bar.new(Baz.new))
 ---
 ## RelayChain
 RelayChain is object like a connect to function's input from function's output.  
-(methods well as can connect Proc.)
+(methods well as can connect *Proc*.)
 
 ### Example
 ```ruby
@@ -274,27 +350,50 @@ chain.call("Hello") # => { ( Hello ) }
   chain.call("Hello")
   ```
 
-3. **Use Method object**
+3. **Use *Method* object**
   ```ruby
   chain = RelayChain.new
   chain >> decorator.method(:decorate1) >> decorator.method(:decorate2)
   chain.call("Hello")
   ```
 
-4. **Use add method**
+4. **Use *add* **
   ```ruby
+  chain = RelayChain.new(Decorator.new)
   chain.add(:decorate1).add(:decorate2).call("Hello")
   ```
 
-5. **Use add_all method**
+5. **Use *add_all* **
   ```ruby
+  chain = RelayChain.new(Decorator.new)
   chain.add_all(:decorate1, :decorate2).call("Hello")
   ```
 
-#### Insert, Delete, Clear
-insert, insert_all method is insert function to chain.  
-delete_at method is delete function from chain.  
-clear method is delete all function from chain.
+#### Insert
+*insert*, *insert_all* is insert function to chain.
+```ruby
+chain = RelayChain.new(Decorator.new, :decorate2)
+chain.insert(0, :decorate1)
+chain.call("Hello") # => { ( Hello ) }
+
+chain = RelayChain.new(Decorator.new)
+chain.insert_all(0, :decorate1, :decorate2)
+chain.call("Hello") # => { ( Hello ) }
+```
+#### Delete
+*delete_at* is delete function from chain.
+```ruby
+chain = RelayChain.new(Decorator.new, :decorate1, :decorate2)
+chain.delete_at(0)
+chain.call("Hello") # => { Hello }
+```
+#### Clear
+*clear* is delete all function from chain.
+```ruby
+chain = RelayChain.new(Decorator.new, :decorate1, :decorate2)
+chain.clear
+chain.call("Hello") # => nil
+```
 
 ### How to connect method of differed instance
 Example, following two class.  
@@ -316,7 +415,7 @@ class Decorator2
 end
 ```
 ###### Solution
-1. **Array, format is [instance, Symbol or String of method]**
+1. ** *Array*, format is [instance, *Symbol* or *String* of method]**
   ```ruby
   # Symbol ver.
   chain = RelayChain.new(Decorator.new)
@@ -329,7 +428,7 @@ end
   chain.call("Hello") # => [ { ( Hello ) } ]
   ```
 
-2. **String, use registered instance**
+2. ** *String*, use registered instance**
   ```ruby
   chain = RelayChain.new(Decorator.new)
 
@@ -370,7 +469,7 @@ end
   chain.call("Emerson, Lake") # => Emerson, Lake And Palmer
   ```
 
-2. **Add lambda or Proc to between these methods.**  
+2. **Add *lambda* or *Proc* to between these methods.**  
   lambda's format is following.
   ```ruby
   # parameter: chain is chain object.  
@@ -385,9 +484,15 @@ end
   chain >> :decorate >> arg_adder >> :union
   chain.call("Tom") # => Tom And Jerry
   ```
+  can write as follows by *add* with block.
+  ```ruby
+  chain = RelayChain.new(Decorator.new)
+  chain.add(:decorate).add { |chain, value| chain.call(value, "Jerry") }.add(:union)
+  chain.call("Tom") # => Tom And Jerry
+  ```
 
 ### Appendix
-**Chain stop by means of lambda.**
+**Chain stop by means of *lambda*.**
 ```ruby
 class Decorator
   def decorate1(value)

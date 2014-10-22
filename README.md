@@ -79,25 +79,29 @@ chain.call # => LOUIS
 
 3. **Use *add***
   ```ruby
+  chain = PullChain.new(account)
   chain.add(:user).add(:name).add(:upcase).call
   ```
 
 4. **Use *add_all***
   ```ruby
+  chain = PullChain.new(account)
   chain.add_all(:user, :name, :upcase).call
   ```
 
 5. **Use *Proc***
   ```ruby
-  chain << Proc.new { user } << Proc.new { name } << Proc.new { upcase }
   chain = PullChain.new(account)
+  chain << Proc.new { user } << Proc.new { name } << Proc.new { upcase }
   chain.call
   ```
   If you use *lambda* then can't omit block parameter.
   block parameter is previous chain result.
   ```ruby
-  chain << lambda { |account| account.user } << lambda { |user| user.name } << lambda { |name| name.upcase }
   chain = PullChain.new(account)
+  chain << lambda { |account| account.user } <<
+            lambda { |user| user.name } <<
+            lambda { |name| name.upcase }
   chain.call
   ```
   *lambda* evaluate by previous chain result, so can call results method direct.
@@ -159,7 +163,7 @@ class Foo
 end
 ```
 ###### Solution
-1. ** *Array*, format is [*Symbol*, [\*args]]**
+1. **_Array_, format is [_Symbol_, [\*args]]**
   ```ruby
   chain = PullChain.new(Foo.new) << [:say, ["Andres", "Hello"]]
   chain.call # => Andres said 'Hello'
@@ -172,15 +176,15 @@ end
   ```
 
 3. ***Proc***
-```ruby
-chain = PullChain.new(Foo.new) << Proc.new { say('Julian', 'Nice to meet you') }
-chain.call # => Julian said 'Nice to meet you'
-```
+  ```ruby
+  chain = PullChain.new(Foo.new) << Proc.new { say('Julian', 'Nice to meet you') }
+  chain.call # => Julian said 'Nice to meet you'
+  ```
 
-4. ** *add* with block**
-```ruby
-chain = PullChain.new(Foo.new).add { say('Narciso', 'How do you do?') }
-chain.call # => Narciso said 'How do you do?'
+4. **_add_ with block**
+  ```ruby
+  chain = PullChain.new(Foo.new).add { say('Narciso', 'How do you do?') }
+  chain.call # => Narciso said 'How do you do?'
 ```
 
 ### Require block on method
@@ -192,28 +196,28 @@ What should do in this case?
 
 ###### Solution
 
-1. ** *Array*, format is [*Symbol*, [\*args, *Proc*]]**
+1. **_Array_, format is [_Symbol_, [\*args, _Proc_]]**
   ```ruby
   chain = PullChain.new([1,2,3,4,5])
   chain << [:inject, [3, lambda { |sum, n| sum + n }]]
   chain.call # => 18
   ```
 
-2. ** *String* **
+2. **_String_**
   ```ruby
   chain = PullChain.new([1,2,3,4,5])
   chain << "inject(3) { |sum, n| sum + n }"
   chain.call # => 18
   ```
 
-3. ** *Proc* **
+3. **_Proc_**
   ```ruby
   chain = PullChain.new([1,2,3,4,5])
   chain << Proc.new { inject(3) { |sum, n| sum + n } }
   chain.call # => 18
   ```
 
-4. ** *add* with block **
+4. **_add_ with block**
 ```ruby
 chain = PullChain.new([1,2,3,4,5])
 chain.add { inject(3) { |sum, n| sum + n } }
@@ -238,7 +242,7 @@ foo = Foo.new(Bar.new(Baz.new))
 ```
 ###### Example: use result on chain
 
-1. ** *String* **  
+1. **_String_**  
   Can use bar instance in backward!
   ```ruby
   chain = PullChain.new(foo) << "bar/baz/say(bar.speaker, 'Good!')"
@@ -251,7 +255,7 @@ foo = Foo.new(Bar.new(Baz.new))
   chain.call # => Julian said 'Cool'
   ```
 
-2. ** *Array* **  
+2. **_Array_**  
   Can access result by *Proc*.
   ```ruby
   chain = PullChain.new(foo) << :bar << :baz
@@ -286,14 +290,14 @@ foo = Foo.new(Bar.new(Baz.new))
   ```
 
 3. **Note:use operator in chain**
-  * ** *String* type chain**
+  * **_String_ type chain**
     ```ruby
     table = {name: %w(Bill Scott Paul)}
     PullChain.new(table, "[:name]").call # => [:name] NG
     PullChain.new(table, "self[:name]").call # => ["Bill", "Scott", "Paul"] OK
     ```
 
-  * ** *Array* type chain**
+  * **_Array_ type chain**
     ```ruby
     PullChain.new(table, [:[], [:name]]).call # OK
     ```
@@ -357,13 +361,13 @@ chain.call("Hello") # => { ( Hello ) }
   chain.call("Hello")
   ```
 
-4. **Use *add* **
+4. **Use _add_**
   ```ruby
   chain = RelayChain.new(Decorator.new)
   chain.add(:decorate1).add(:decorate2).call("Hello")
   ```
 
-5. **Use *add_all* **
+5. **Use _add_all_**
   ```ruby
   chain = RelayChain.new(Decorator.new)
   chain.add_all(:decorate1, :decorate2).call("Hello")
@@ -415,7 +419,7 @@ class Decorator2
 end
 ```
 ###### Solution
-1. ** *Array*, format is [instance, *Symbol* or *String* of method]**
+1. **_Array_, format is [instance, _Symbol_ or _String_ of method]**
   ```ruby
   # Symbol ver.
   chain = RelayChain.new(Decorator.new)
@@ -428,7 +432,7 @@ end
   chain.call("Hello") # => [ { ( Hello ) } ]
   ```
 
-2. ** *String*, use registered instance**
+2. **_String_, use registered instance**
   ```ruby
   chain = RelayChain.new(Decorator.new)
 

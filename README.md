@@ -218,11 +218,11 @@ What should do in this case?
   ```
 
 4. **_add_ with block**
-```ruby
-chain = PullChain.new([1,2,3,4,5])
-chain.add { inject(3) { |sum, n| sum + n } }
-chain.call # => 18
-```
+  ```ruby
+  chain = PullChain.new([1,2,3,4,5])
+  chain.add { inject(3) { |sum, n| sum + n } }
+  chain.call # => 18
+  ```
 
 ### Use result on chain
 Like a following example, can use result on chain.

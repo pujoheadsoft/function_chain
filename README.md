@@ -100,8 +100,8 @@ chain.call # => LOUIS
   ```ruby
   chain = PullChain.new(account)
   chain << lambda { |account| account.user } <<
-            lambda { |user| user.name } <<
-            lambda { |name| name.upcase }
+           lambda { |user| user.name } <<
+           lambda { |name| name.upcase }
   chain.call
   ```
   *lambda* evaluate by previous chain result, so can call results method direct.
@@ -185,7 +185,7 @@ end
   ```ruby
   chain = PullChain.new(Foo.new).add { say('Narciso', 'How do you do?') }
   chain.call # => Narciso said 'How do you do?'
-```
+  ```
 
 ### Require block on method
 Following example's method is require Block.  
